@@ -1,0 +1,64 @@
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/htmx.org@1.7.0"></script>
+<script type="module" src="https://unpkg.cpm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script module src="https://unpkg.cpm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<title>{% block tittle %}Login{% endblock %} | sam's restaurant</title>
+
+<nav class="">
+    <div class="frontpage flex justify-between items-center p-4 rounded-md shadow-md bg-gray-500">
+        <div class="flex items-center space-x-4 rounded-lg">
+            <img src="https://webstockreview.net/images/clipart-restaurant-restaurant-logo-13.png" alt="" class=" w-20 h-20 max-w-xs sm:max-w-sm md:max-w-lg lg:max-w-xl xl:max-w-2xl rounded-lg shadow-md">
+            <p class="text-gold text-3x1 font-extrabold">SAM's RESTAURANT</p>
+        </div>
+        <ul class="nav-menu flex items-center list-none gap-10 text-white-700 text-lg front-semibold">
+            <li class="menu-item" onclick="setMenu('home')"><a href="home" class="nav-link"><a href="{% url 'frontpage' %}">Home</a></a>{% if menu == 'home' %}<hr class="nav-hr">{% endif %}</li>
+            <li class="menu-item" onclick="setMenu('login')"><a href="login" class="nav-link">Login</a>{% if menu == 'login' %}<hr class="nav-hr">{% endif %}</li>
+            <li class="menu-item" onclick="setMenu('signup')"><a href="signup" class="nav-link"><a href="{% url 'signup' %}">SignUp</a></a>{% if menu == 'signup' %}<hr class="nav-hr">{% endif %}</li>
+            <li>
+                <div
+                    hx-get="{% url 'hx_menu_cart' %}"
+                    hx-trigger="update-menu-cart from:body"
+                    hx-swap="innerHTML"
+                >
+                    {% include 'cart/menu_cart.html' %}
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="max-w-lg mx-auto flex flex-wrap p-6">
+    <div class="w-full bg-gray-100 p-6 rounded-xl">
+        <h1 class="mb-6 text-2xl">Login</h1>
+        
+        <form method="get" action="." class="space-y-3">
+            {% csrf_token %}
+
+            <div>
+                <label>Username</label>
+                <input type="text" name="username" class="w-full mt-2 py-4 px-6 bg-white rounded-xl">
+            </div>
+            <div>
+                <label>Password</label>
+                <input type="password" name="password" class="w-full mt-2 py-4 px-6 bg-white rounded-xl">
+            </div>
+            {% if form.errors %}
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <div class="p-6 bg-red-200 text-red-800 rounded-xl">
+                            <p>{{ error|escape}}</p>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <div class="p-6 bg-red-200 text-red-800 rounded-xl">
+                        <p>{{ error|escape}}</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <div>
+                <button class="py-4 px-6 rounded-xl text-white bg-purple-500 hover:bg-purple-700"><a href="{% url 'menu' %}">Submit</a></button>
+            </div>
+        </form>
+    </div>
+</div>

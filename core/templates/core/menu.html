@@ -1,0 +1,40 @@
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/htmx.org@1.7.0"></script>
+<script type="module" src="https://unpkg.cpm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script module src="https://unpkg.cpm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<title>{% block tittle %}Menu{% endblock %} | sam's restaurant</title>
+
+<nav class="">
+    <div class="frontpage flex justify-between items-center p-4 rounded-md shadow-md bg-gray-500">
+        <div class="flex items-center space-x-4 rounded-lg">
+            <img src="https://webstockreview.net/images/clipart-restaurant-restaurant-logo-13.png" alt="" class=" w-20 h-20 max-w-xs sm:max-w-sm md:max-w-lg lg:max-w-xl xl:max-w-2xl rounded-lg shadow-md">
+            <p class="text-gold text-3x1 font-extrabold">SAM's RESTAURANT</p>
+        </div>
+        <ul class="nav-menu flex items-center list-none gap-10 text-white-700 text-lg front-semibold">
+            <li class="menu-item" onclick="setMenu('home')"><a href="home" class="nav-link"><a href="{% url 'frontpage' %}">Home</a></a>{% if menu == 'home' %}<hr class="nav-hr">{% endif %}</li>
+            <li class="menu-item" onclick="setMenu('login')"><a href="login" class="nav-link">Login</a>{% if menu == 'login' %}<hr class="nav-hr">{% endif %}</li>
+            <li class="menu-item" onclick="setMenu('signup')"><a href="signup" class="nav-link">SignUp</a>{% if menu == 'signup' %}<hr class="nav-hr">{% endif %}</li>
+            <li>
+                <div
+                    hx-get="{% url 'hx_menu_cart' %}"
+                    hx-trigger="update-menu-cart from:body"
+                    hx-swap="innerHTML"
+                >
+                    {% include 'cart/menu_cart.html' %}
+                </div>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<p class="text-gold text-4xl font-extrabold mt-12">Menu</p>
+<div class="max-w-6xl mx-auto py-2 px-6 xl:px-0">
+    <div class="products flex items-center flex-wrap">
+        {% for product in products %}
+            {% include 'product/partials/product_list_item.html' %}
+        {% endfor %}
+    </div> 
+</div>
+
+
+

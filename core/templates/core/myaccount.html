@@ -1,0 +1,96 @@
+<title>{% block tittle %}My accoount{% endblock %} | sam's restaurant</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/htmx.org@1.7.0"></script>
+<script type="module" src="https://unpkg.cpm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+<script module src="https://unpkg.cpm/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+
+<nav class="">
+    <div class="frontpage flex justify-between items-center p-4 rounded-md shadow-md bg-gray-500">
+        <div class="flex items-center space-x-4 rounded-lg">
+            <img src="https://webstockreview.net/images/clipart-restaurant-restaurant-logo-13.png" alt="" class=" w-20 h-20 max-w-xs sm:max-w-sm md:max-w-lg lg:max-w-xl xl:max-w-2xl rounded-lg shadow-md">
+            <p class="text-gold text-3x1 font-extrabold">SAM's RESTAURANT</p>
+        </div>
+        <ul class="nav-menu flex items-center list-none gap-10 text-white-700 text-lg front-semibold">
+            <li class="menu-item" onclick="setMenu('home')"><a href="home" class="nav-link"><a href="{% url 'frontpage' %}">Home</a></a>{% if menu == 'home' %}<hr class="nav-hr">{% endif %}</li>
+            <li class="menu-item" onclick="setMenu('login')"><a href="login" class="nav-link">Login</a>{% if menu == 'login' %}<hr class="nav-hr">{% endif %}</li>
+            <li class="menu-item" onclick="setMenu('signup')"><a href="signup" class="nav-link"><a href="{% url 'signup' %}">SignUp</a></a>{% if menu == 'signup' %}<hr class="nav-hr">{% endif %}</li>
+            <li >
+                <div
+                    hx-get="{% url 'hx_menu_cart' %}"
+                    hx-trigger="update-menu-cart from:body"
+                    hx-swap="innerHTML"
+                >
+                    {% include 'cart/menu_cart.html' %}
+                </div>
+            </li>
+        </ul> 
+    </div>     
+</nav>
+
+<div class="max-w-6xl mx-auto p-6">
+
+    <h2 clss=" my-6 text-xl">My order</h2>
+
+    
+        <div class="w-full mb-6 p-6 flex flex-wrap bg-gray-100 rounded-xl">
+           
+            <div class="mb-6 w-full">
+                {% for item in cart %}
+                    <div class="product mb-6 flex pr-6">
+                        <a href="#" class="w-1/4">
+                            <img class="hover:shadow-lg rounded-xl" src="{{ item.product.get_thumbnail }}">
+                        </a>
+
+                        <div class="w-3/4 pl-6">
+                            <div class="flex justify-between">
+                                <a href="#" class="text-lg">{{ item.product.name }}</a>
+
+                                <p class="mb-6 pt-1 text-gray-400">R{{ item.product.price }}</p>
+                            </div>
+
+                            <hr>
+
+                            <div class="mt-6">
+                                
+                                Quantity: {{ item.quantity }}
+                               
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div>
+                <p class="text-lg">Total: R{{ cart.get_total_cost }}</p>
+            </div>
+        </div>
+    
+</div>
+
+<div id="paypal-button-container"></div>
+        <script src="https://www.paypal.com/sdk/js?client-id=AfZwWFJjsXsuJ2_fUxJtNVrax1IlM1mtYuoWgL8KmV9EeydVr7feObgz2-yrzoT1vgTpixZ2euSAAhcd&currency=USD"></script>
+        <script>
+            paypal.Buttons({
+                createOrder: function(data, actions) {
+                    return (actions.order.create)({
+                        purchase_units: [{
+                            amount: {
+                                value: '{{ cart.get_total_cost }}'
+                            }
+                        }]
+                    });
+                },
+                onApprove: function(data, actions) {
+                    return actions.order.capture().then(function(details) {
+                        var payerName = details.payer.name.given_name;
+                        if (details.payer.name.surname) {
+                            payerName += ' ' + details.payer.name.surname;
+                        }
+                        alert('Transaction completed by ' + payerName);
+                        // Hide PayPal button after payment
+                        document.getElementById('paypal-button-container').style.display = '';
+
+                        window.location.href="{% url 'map' %}"
+                    });
+                }
+            }).render('#paypal-button-container');
+        </script>
